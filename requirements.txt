@@ -1,0 +1,22 @@
+# Audio
+librosa>=0.10
+soundfile>=0.12
+sounddevice>=0.4
+
+# Datos y ML clásico
+numpy
+pandas
+scipy
+scikit-learn
+joblib
+
+# Deep Learning
+tensorflow>=2.18
+
+# Gráficas
+matplotlib
+seaborn
+
+# Aplicación
+streamlit>=1.40
+openpyxl
