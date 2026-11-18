@@ -1,6 +1,6 @@
 """Preprocesamiento de audio y extracción de características.
 
-Se usan las mismas funciones en entrenamiento y en la aplicación, para que
+Se usan las mismas funciones en el clustering y en la aplicación, para que
 el audio en vivo pase exactamente por el mismo proceso que el dataset.
 """
 import numpy as np
@@ -34,35 +34,7 @@ def segmentar(y):
     return [y[i:i + n] for i in range(0, len(y) - n + 1, salto)]
 
 
-# --- Aumento de datos (solo para entrenamiento) ------------------------------
-def aumentar(y, rng):
-    """Genera variantes del audio para combatir el sobreajuste."""
-    variantes = []
-    ruido = rng.normal(0, 0.005, len(y))                      # ruido de aula
-    variantes.append(np.clip(y + ruido, -1, 1))
-    pasos = rng.choice([-2, -1, 1, 2])                        # cambio de tono
-    variantes.append(librosa.effects.pitch_shift(y, sr=C.SR, n_steps=float(pasos)))
-    ganancia = rng.uniform(0.6, 0.9)                          # hablar más bajo
-    variantes.append(y * ganancia)
-    return variantes
-
-
 # --- Características ---------------------------------------------------------
-def espectrograma_mel(seg):
-    """Espectrograma log-Mel estandarizado: 'imagen' de entrada a la CNN."""
-    mel = librosa.feature.melspectrogram(
-        y=seg, sr=C.SR, n_fft=C.N_FFT, hop_length=C.HOP, n_mels=C.N_MELS)
-    log_mel = librosa.power_to_db(mel, ref=np.max)
-    return ((log_mel - log_mel.mean()) / (log_mel.std() + 1e-8)).astype(np.float32)
-
-
-def mfcc_secuencia(seg):
-    """Matriz MFCC (frames x N_MFCC), útil para una LSTM/GRU."""
-    m = librosa.feature.mfcc(y=seg, sr=C.SR, n_mfcc=C.N_MFCC,
-                             n_fft=C.N_FFT, hop_length=C.HOP)
-    return m.T.astype(np.float32)
-
-
 def vector_mfcc(seg):
     """Vector fijo de 2*N_MFCC valores (media y desviación de cada MFCC).
 
@@ -71,6 +43,20 @@ def vector_mfcc(seg):
     m = librosa.feature.mfcc(y=seg, sr=C.SR, n_mfcc=C.N_MFCC,
                              n_fft=C.N_FFT, hop_length=C.HOP)
     return np.concatenate([m.mean(axis=1), m.std(axis=1)]).astype(np.float32)
+
+
+def evaluar_calidad(y):
+    """Revisa una grabación cruda (16 kHz). Devuelve (ok, mensaje)."""
+    if y.size == 0:
+        return False, "La grabación está vacía."
+    if np.mean(np.abs(y) > 0.99) > 0.01:
+        return False, "El audio está saturado (demasiado fuerte o muy cerca del micrófono)."
+    if np.sqrt(np.mean(y ** 2)) < 0.005:
+        return False, "Se escucha muy bajo o en silencio. Habla más cerca del micrófono."
+    voz, _ = librosa.effects.trim(y, top_db=C.TOP_DB)
+    if len(voz) / C.SR < 0.8:
+        return False, "Hay muy poca voz (menos de 1 segundo). Repite la frase completa."
+    return True, f"Bien: {len(voz) / C.SR:.1f} s de voz."
 
 
 def audio_a_segmentos(ruta_o_archivo):

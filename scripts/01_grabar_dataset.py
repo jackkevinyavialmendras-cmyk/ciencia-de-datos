@@ -18,18 +18,7 @@ import soundfile as sf
 
 from src import config as C
 
-FRASES = [
-    "Di tu nombre completo",
-    "Cuenta del uno al diez",
-    "Presente, licenciada",
-    "Hoy es un buen día para aprender",
-    "Mi código de estudiante es...",
-    "El aprendizaje automático reconoce mi voz",
-    "Di los días de la semana",
-    "Lee en voz alta: tres, siete, cinco, nueve",
-    "Buenos días a todos",
-    "Estoy en la clase de Machine Learning",
-]
+FRASES = C.FRASES
 
 
 def main():
