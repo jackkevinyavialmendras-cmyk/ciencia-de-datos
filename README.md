@@ -22,7 +22,7 @@ cada cluster con el estudiante mayoritario.
 ## Estructura
 
 ```
-data/raw/<estudiante>/*.wav     audios originales (no se suben a GitHub)
+data/raw/<estudiante>/*.wav     audios originales (se suben para que el grupo pueda probar)
 data/desconocidos/<persona>/    voces NO registradas, para probar el rechazo
 data/processed/dataset.npz      dataset preprocesado (vectores MFCC)
 models/clustering.joblib        modelo K-Means entrenado
@@ -89,4 +89,4 @@ streamlit run app/app.py
 - 15 a 30 personas, 20 a 40 audios de unos 3 s cada una.
 - Dos sesiones en días distintos (`--sesion 1` y `--sesion 2`): si todos tienen
   sesión 2, se usa automáticamente como conjunto de prueba.
-- Pedir consentimiento a quienes graban. Los audios **no** se suben al repositorio.
+- Pedir consentimiento a quienes graban: los audios se suben al repositorio para que todo el grupo pueda probar el sistema.

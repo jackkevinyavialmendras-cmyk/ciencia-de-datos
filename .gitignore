@@ -222,9 +222,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# --- Proyecto: datos de voz (privados) y artefactos generados ---
-data/raw/*
-!data/raw/.gitkeep
+# --- Proyecto: artefactos generados (se recrean con «Ejecutar todo») ---
+# Los audios de data/raw/ y data/desconocidos/ SÍ se suben para que el grupo pueda probar.
 data/processed/*
 !data/processed/.gitkeep
 data/asistencia.db
